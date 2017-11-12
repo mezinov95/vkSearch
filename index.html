@@ -131,7 +131,6 @@
 									       	success: data => {
 									    		const person = data.response[0];
 									    		const { first_name, last_name, bdate, sex, can_write_private_message, photo_max } = person;
-									    		console.log(person);
 									    		if (genders[sex] === 'female' && can_write_private_message) {
 									    			$(`#${postId}`).append(`
 									    				<div style='width: 100%;'>
@@ -160,11 +159,10 @@
 
 		let dates = [];
 		setTimeout(() => {
-			$('.list_item').each(() => {
+			$('.list_item').each(function() {
 				dates.push($(this).attr('date'))
 			})
 			const sortedDates = dates.sort();
-
 			for (let i = 0; i < sortedDates.length; i++) {
 				const postWithComments = $(document.querySelector(`[date="${sortedDates[i]}"]`));
 				$('#list').prepend(postWithComments);
