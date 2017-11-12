@@ -1,2 +1,3 @@
 # vkSearch
-People search in vk publics
+People search in vk publics.
+Мини-приложение (скорее, js-скрипт), которое реализует поиск людей по лайкам в группах вконтакте.
