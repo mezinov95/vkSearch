@@ -1,0 +1,176 @@
+<html>
+	<head>
+		<title>mezinovVKJS</title>
+		<meta charset="utf-8">
+		<script src="https://code.jquery.com/jquery-3.0.0.min.js"> </script>
+		<style>
+			#list {
+
+			}
+			#list > div {
+				border-radius: 5px;
+				margin-bottom: 30px;
+			}
+			#list > div:nth-child(even) {
+				background: #ccc
+			}
+			#list > div:nth-child(odd) {
+				background: #d8cbcb
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			access_token смотреть в настройках приложения. Ну или спрашивать у <a href="https://vk.com/mezinov95">@nmezinov</a>
+		</div>
+		<div>
+			<h3>Список результатов</h3>
+			<div id='list'>
+
+			</div>
+		</div>
+	<script>
+		const vkApi = 'https://api.vk.com/method/';
+		const apiVersion = '5.52';
+		const accessToken = 'd0d27317d0d27317d0d2731713d08d2b54dd0d2d0d273178ad2585965b04e4ba80df015';
+		const groups = {
+			mgu: -59592700,
+			mai: -60021830,
+			mei: -61021640,
+			miit: -61415987,
+			hse: -57354358,
+			rgau: -58638134,
+			rgung: -58157078,
+			mpgu: -30973505,
+			rgsu: -58593098,
+			guu: -58291392,
+			mgtu: -59336460,
+			rudn: -62739999,
+			mgmu: -58060828,
+			rnimu: -58769820,
+			mgmsu: -46603054,
+			reu: -54683887,
+			mtu: -57143976,
+			mglu: -58726513
+		}
+		const minAge = 20;
+		const genders = {
+			1: 'female',
+			2: 'male'
+		};
+		const canWriteMessage = {
+			0: 'no',
+			1: 'yes'
+		}
+
+		function composeUrl(method, params) {
+			let url = vkApi + method + '?access_token=' + accessToken;
+			for (key in params) {
+				url += '&' + key + '=' + params[key];
+  			}
+  			url += '&v=' + apiVersion;
+
+  			return url;
+		}
+
+		const suitableWords = [
+			'знаком',
+			'девушк',
+			'девочк'
+		];
+		function isTextSuitable(text) {
+			for (let i = 0; i < suitableWords.length; i++) {
+				if (text.indexOf(suitableWords[i]) !== -1) {
+					return true;
+				}	
+			}
+			return false;
+		}
+
+		for (let key in groups) {
+			$.ajax({
+		    	url: composeUrl('wall.get', {
+		    			owner_id: groups[key],
+		    			count: 100
+		    		}),
+		    	method: 'GET',
+		    	dataType: 'JSONP',
+		       	success: function(data){
+		    		const posts = data.response.items;
+
+		    		for (let i = 0; i < posts.length; i++) {
+		    			const post = posts[i];
+		    			if (post.likes.count > 2 && isTextSuitable(post.text)) {
+		    				const postId = 'list_item_' + i;
+		    				const postDate = new Date(post.date * 1000);
+		    				const year = postDate.getFullYear();
+		    				const month = postDate.getMonth() + 1;
+		    				const number = postDate.getDate();
+		    				const hours = postDate.getHours();
+		    				const minutes = postDate.getMinutes();
+		    				$("#list").append(`<div id=${postId} class='list_item' date=${post.date}><i>[<b>${key}</b> ${hours}:${minutes} ${number}.${month}.${year}] ${post.text}<i/></div>`);
+		    				$.ajax({
+						    	url: composeUrl('likes.getList', {
+									type: 'post',
+									owner_id: post.owner_id,
+									item_id: post.id
+						    	}),
+						    	method: 'GET',
+						    	dataType: 'JSONP',
+						       	success: function(data){
+						    		const people = data.response.items;
+						    		for (let j = 0; j < people.length; j++) {
+						    			$.ajax({
+									    	url: composeUrl('users.get', {
+												user_ids: people[j],
+												fields: 'sex,bdate,can_write_private_message,photo_max, photo_max_orig'
+									    	}),
+									    	method: 'GET',
+									    	dataType: 'JSONP',
+									       	success: function(data){
+									    		const person = data.response[0];
+									    		const { first_name, last_name, bdate, sex, can_write_private_message, photo_max } = person;
+									    		console.log(person);
+									    		if (genders[sex] === 'female' && can_write_private_message) {
+									    			$(`#${postId}`).append(`
+									    				<div style='width: 100%;'>
+									    					<div style='width: 40%;display:inline-block;'>
+									    						${first_name} ${last_name} (${bdate})
+								    						</div>
+								    						<div style='width: 40%;display:inline-block;'>
+										    					<a href='https://vk.com/id${people[j]}' target='_blank'>
+										    						<img src=${photo_max} />
+										    					</a>
+									    					</div>
+									    				</div>
+								    				`);
+									    		}
+								  			}
+										});
+						    		}
+					  			}
+							});
+		    				
+		    			}
+		    		}
+	  			}
+			});
+		}
+
+		let dates = [];
+		setTimeout(function() {
+			$('.list_item').each(function() {
+				dates.push($(this).attr('date'))
+			})
+			const sortedDates = dates.sort();
+
+			for (let i = 0; i < sortedDates.length; i++) {
+				const postWithComments = $(document.querySelector(`[date="${sortedDates[i]}"]`));
+				$('#list').prepend(postWithComments);
+			}
+		}, 60000);
+
+	</script>	
+	<body>
+
+</html>
