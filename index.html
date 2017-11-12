@@ -63,7 +63,7 @@
 			1: 'yes'
 		}
 
-		function composeUrl(method, params) {
+		const composeUrl = (method, params) => {
 			let url = vkApi + method + '?access_token=' + accessToken;
 			for (key in params) {
 				url += '&' + key + '=' + params[key];
@@ -78,7 +78,8 @@
 			'девушк',
 			'девочк'
 		];
-		function isTextSuitable(text) {
+
+		const isTextSuitable = text => {
 			for (let i = 0; i < suitableWords.length; i++) {
 				if (text.indexOf(suitableWords[i]) !== -1) {
 					return true;
@@ -95,7 +96,7 @@
 		    		}),
 		    	method: 'GET',
 		    	dataType: 'JSONP',
-		       	success: function(data){
+		       	success: data => {
 		    		const posts = data.response.items;
 
 		    		for (let i = 0; i < posts.length; i++) {
@@ -117,7 +118,7 @@
 						    	}),
 						    	method: 'GET',
 						    	dataType: 'JSONP',
-						       	success: function(data){
+						       	success: data => {
 						    		const people = data.response.items;
 						    		for (let j = 0; j < people.length; j++) {
 						    			$.ajax({
@@ -127,7 +128,7 @@
 									    	}),
 									    	method: 'GET',
 									    	dataType: 'JSONP',
-									       	success: function(data){
+									       	success: data => {
 									    		const person = data.response[0];
 									    		const { first_name, last_name, bdate, sex, can_write_private_message, photo_max } = person;
 									    		console.log(person);
@@ -158,8 +159,8 @@
 		}
 
 		let dates = [];
-		setTimeout(function() {
-			$('.list_item').each(function() {
+		setTimeout(() => {
+			$('.list_item').each(() => {
 				dates.push($(this).attr('date'))
 			})
 			const sortedDates = dates.sort();
