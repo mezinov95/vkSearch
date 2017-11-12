@@ -88,6 +88,10 @@
 			return false;
 		}
 
+		const convenientTimeView = number => {
+			return number > 9 ? number : `0${number}` 
+		}
+
 		for (let key in groups) {
 			$.ajax({
 		    	url: composeUrl('wall.get', {
@@ -105,10 +109,10 @@
 		    				const postId = 'list_item_' + i;
 		    				const postDate = new Date(post.date * 1000);
 		    				const year = postDate.getFullYear();
-		    				const month = postDate.getMonth() + 1;
-		    				const number = postDate.getDate();
-		    				const hours = postDate.getHours();
-		    				const minutes = postDate.getMinutes();
+		    				const month = postDate.getMonth();
+		    				const number = convenientTimeView(postDate.getDate());
+		    				const hours = convenientTimeView(postDate.getHours());
+		    				const minutes = convenientTimeView(postDate.getMinutes());
 		    				$("#list").append(`<div id=${postId} class='list_item' date=${post.date}><i>[<b>${key}</b> ${hours}:${minutes} ${number}.${month}.${year}] ${post.text}<i/></div>`);
 		    				$.ajax({
 						    	url: composeUrl('likes.getList', {
