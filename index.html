@@ -109,7 +109,7 @@
 		    				const postId = 'list_item_' + i;
 		    				const postDate = new Date(post.date * 1000);
 		    				const year = postDate.getFullYear();
-		    				const month = postDate.getMonth();
+		    				const month = postDate.getMonth() + 1;
 		    				const number = convenientTimeView(postDate.getDate());
 		    				const hours = convenientTimeView(postDate.getHours());
 		    				const minutes = convenientTimeView(postDate.getMinutes());
